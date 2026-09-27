@@ -1,6 +1,6 @@
 # ComfyKills
 
-**Version 0.1 – Beta**  
+**Version 0.2 – Beta**  
 **Target: World of Warcraft: Forever 1.60.1 / Interface 16001**
 
 Persistent mob kill database with session, character and account-wide statistics for WoW Forever.
