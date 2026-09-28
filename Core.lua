@@ -4,7 +4,7 @@ ComfyKills = ComfyKills or {}
 local A=ComfyKills
 
 A.name=ADDON_NAME or "ComfyKills"
-A.version="0.2"
+A.version="0.3"
 A.buildDate="28.09.2026"
 A.status="Beta"
 A.gameVersion="WoW Forever 1.60.1"
