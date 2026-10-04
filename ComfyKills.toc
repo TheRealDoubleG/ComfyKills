@@ -3,7 +3,7 @@
 ## Notes: Persistent mob kill database with session, character and account-wide statistics for WoW Forever.
 ## Notes-deDE: Persistente Mob-Kill-Datenbank mit Sitzungs-, Charakter- und Account-Statistiken für WoW Forever.
 ## Author: TheRealDoubleG
-## Version: 0.4
+## Version: 0.5
 ## SavedVariables: ComfyKillsDB
 ## Dependencies: ComfyData
 ## X-ComfySuite: true
@@ -16,3 +16,4 @@ SharedSettings.lua
 Kills.lua
 Options.lua
 SafeWindows.lua
+KillCapture.lua
