@@ -1,5 +1,10 @@
 # ComfyKills Changelog
 
+## 0.6 Beta – 13.10.2026
+- Removed all `UISpecialFrames` writes; WoW Forever protects that Blizzard UI table and blocked ComfyKills during login/browser creation.
+- ComfyKills windows remain closable through their own close controls and use the existing safe-window path.
+- Bumped the addon metadata to 0.6.
+
 ## 0.2 Beta – 28.09.2026
 - Registered ComfyKills in Blizzard's native AddOns settings list with a button to open the full Comfy settings window.
 
@@ -12,3 +17,4 @@
 - Added unit tooltip statistics.
 - Added searchable kill database browser.
 - Added Comfy Suite profile/settings/info framework.
+
