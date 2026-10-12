@@ -1,8 +1,8 @@
 ComfyKills = ComfyKills or {}
 local A = ComfyKills
 
-A.version = "0.4"
-A.buildDate = "04.10.2026"
+A.version = "0.6"
+A.buildDate = "13.10.2026"
 A.safeOptionControls = A.safeOptionControls or {}
 
 local function RelativeTime(epoch)
@@ -130,3 +130,4 @@ function A:RefreshBrowser()
     local records=self:GetBrowserRecords()
     for i,row in ipairs(self.browserRows or {}) do local item=records[i]; if item then row.data=item; row.name:SetText(item.record.name or item.key); row.count:SetText(tostring(item.count)); row.type:SetText(item.record.creatureType or item.record.classification or "—"); row.last:SetText(RelativeTime(item.record.lastKill)); row:Show() else row.data=nil; row:Hide() end end
 end
+
