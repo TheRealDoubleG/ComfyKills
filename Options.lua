@@ -206,7 +206,8 @@ function A:InitializeOptions()
         A.db.optionsWindow.point, A.db.optionsWindow.relativePoint = p, r or p
         A.db.optionsWindow.x, A.db.optionsWindow.y = x or 0, y or 0
     end)
-    table.insert(UISpecialFrames, frame:GetName())
+    -- UISpecialFrames is protected on WoW Forever. The frame remains
+    -- closable through its own controls; never mutate Blizzard's table.
     self.optionsFrame = frame
     frame.tabs, frame.pages = {}, {}
 
@@ -292,3 +293,4 @@ function A:ShowOptions()
     self.optionsFrame:Raise()
     self:RefreshOptions()
 end
+
