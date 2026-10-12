@@ -6,8 +6,8 @@ local A = ComfyKills
 -- normal PARTY_KILL path, but remember damage done by the player/pet and use a
 -- short UNIT_DIED fallback while solo. Every creature GUID is de-duplicated so
 -- PARTY_KILL + UNIT_DIED can never count the same mob twice.
-A.version = "0.5"
-A.buildDate = "04.10.2026"
+A.version = "0.6"
+A.buildDate = "13.10.2026"
 A.recentKillCredit = A.recentKillCredit or {}
 A.recentRecordedKills = A.recentRecordedKills or {}
 
@@ -222,3 +222,4 @@ function A:InitializeFeature()
     self.lastXP = CurrentXP()
     self.lastXPMax = CurrentXPMax()
 end
+
