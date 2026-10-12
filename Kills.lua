@@ -164,7 +164,7 @@ function A:CreateBrowser()
     local f=CreateFrame("Frame","ComfyKillsBrowser",UIParent,"BasicFrameTemplateWithInset")
     f:SetSize(780,610); f:SetPoint("CENTER"); f:SetFrameStrata("HIGH"); f:SetClampedToScreen(true); f:SetMovable(true); f:EnableMouse(true); f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart",function(self) self:StartMoving() end); f:SetScript("OnDragStop",function(self) self:StopMovingOrSizing() end)
-    f.TitleText:SetText("ComfyKills · "..self:T("DATABASE")); f:Hide(); table.insert(UISpecialFrames,f:GetName())
+    f.TitleText:SetText("ComfyKills · "..self:T("DATABASE")); f:Hide()
     self.browser=f; self.browserMode="all"
 
     local all=CreateFrame("Button",nil,f,"UIPanelButtonTemplate"); all:SetSize(110,24); all:SetPoint("TOPLEFT",20,-32); all:SetText(self:T("ALL_KILLS")); all:SetScript("OnClick",function() A.browserMode="all"; A:RefreshBrowser() end)
@@ -245,3 +245,4 @@ function A:BuildGeneralOptions(page,ui)
     self.summaryText=page:CreateFontString(nil,"ARTWORK","GameFontHighlight"); self.summaryText:SetPoint("TOPLEFT",20,-355); self.summaryText:SetWidth(650); self.summaryText:SetJustifyH("LEFT")
     local n=page:CreateFontString(nil,"ARTWORK","GameFontHighlightSmall"); n:SetPoint("TOPLEFT",20,-415); n:SetWidth(680); n:SetJustifyH("LEFT"); n:SetText(self:T("FOREVER_NOTE"))
 end
+
