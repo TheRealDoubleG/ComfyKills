@@ -4,8 +4,8 @@ ComfyKills = ComfyKills or {}
 local A=ComfyKills
 
 A.name=ADDON_NAME or "ComfyKills"
-A.version="0.5"
-A.buildDate="04.10.2026"
+A.version="0.6"
+A.buildDate="13.10.2026"
 A.status="Beta"
 A.gameVersion="WoW Forever 1.60.1"
 A.targetBuild="70009"
@@ -66,3 +66,4 @@ e:SetScript("OnEvent",function(_,ev,arg1)
         if A.InitializeOptions then A:InitializeOptions() end
     elseif ev=="PLAYER_LOGIN" and A.RefreshFeature then A:RefreshFeature() end
 end)
+
