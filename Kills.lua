@@ -54,7 +54,16 @@ function A:RecordKill(sourceGUID,destGUID,destName)
     if not self.db or not self.db.enabled or type(ComfyData)~="table" or type(ComfyData.RecordKill)~="function" then return end
     local playerGUID=type(UnitGUID)=="function" and UnitGUID("player") or nil
     local petGUID=type(UnitGUID)=="function" and UnitGUID("pet") or nil
-    if sourceGUID~=playerGUID and not (self.db.kills.countPetKills and sourceGUID==petGUID) then return end
+    if type(destGUID)~="string" or destGUID=="" then return false end
+    if sourceGUID~=playerGUID and not (self.db.kills.countPetKills and sourceGUID==petGUID) then return false end
+
+    -- The modern PARTY_KILL event may be repeated or coexist with legacy
+    -- combat-log notifications on some clients. Count a mob GUID only once.
+    local now=Now()
+    self.recentKillGUIDs=self.recentKillGUIDs or {}
+    self.recentKillOrder=self.recentKillOrder or {}
+    local previous=self.recentKillGUIDs[destGUID]
+    if previous and now-previous<30 then return false end
 
     local cached=self.unitCache[destGUID] or {}
     local mapID,x,y=CurrentPosition()
@@ -65,8 +74,18 @@ function A:RecordKill(sourceGUID,destGUID,destName)
         mapID=mapID,x=x,y=y,time=Epoch(),
     })
 
+    if not key then return false end
+    self.recentKillGUIDs[destGUID]=now
+    self.recentKillOrder[#self.recentKillOrder+1]={guid=destGUID,at=now}
+    if #self.recentKillOrder>128 then
+        local removed=table.remove(self.recentKillOrder,1)
+        if self.recentKillGUIDs[removed.guid]==removed.at then
+            self.recentKillGUIDs[removed.guid]=nil
+        end
+    end
+
     self.pendingKillKey=key
-    self.pendingKillAt=Now()
+    self.pendingKillAt=now
     self.pendingKillXPBefore=type(UnitXP)=="function" and tonumber(UnitXP("player")) or nil
 
     if self.db.kills.milestoneNotifications and record and MILESTONES[tonumber(record.total) or 0] then
@@ -74,12 +93,21 @@ function A:RecordKill(sourceGUID,destGUID,destName)
     end
     self:RefreshBrowser()
     self:RefreshFeatureOptions()
+    return true
 end
 
-function A:HandleCombatLog()
-    if type(CombatLogGetCurrentEventInfo)~="function" then return end
-    local data={CombatLogGetCurrentEventInfo()}
-    if data[2]=="PARTY_KILL" then A:RecordKill(data[4],data[8],data[9]) end
+-- Forever (modern API): PARTY_KILL is now its own supported event.
+-- Do not attempt to register restricted COMBAT_LOG_EVENT_UNFILTERED.
+function A:HandlePartyKill(sourceGUID,destGUID)
+    local ok,recorded=pcall(self.RecordKill,self,sourceGUID,destGUID,nil)
+    if not ok then
+        if not self.captureWarningShown then
+            self.captureWarningShown=true
+            self:Print("Kill capture blocked by client/API; please report this.")
+        end
+        return false
+    end
+    return recorded
 end
 
 function A:HandleXPUpdate()
@@ -222,15 +250,16 @@ function A:InitializeFeature()
     self:HookTooltips()
     self.lastXP=type(UnitXP)=="function" and tonumber(UnitXP("player")) or 0
     local f=CreateFrame("Frame"); self.eventFrame=f
-    local events={"COMBAT_LOG_EVENT_UNFILTERED","PLAYER_XP_UPDATE","PLAYER_DEAD","PLAYER_TARGET_CHANGED","UPDATE_MOUSEOVER_UNIT","NAME_PLATE_UNIT_ADDED","PLAYER_ENTERING_WORLD"}
+    local events={"PARTY_KILL","PLAYER_XP_UPDATE","PLAYER_DEAD","PLAYER_TARGET_CHANGED","UPDATE_MOUSEOVER_UNIT","NAME_PLATE_UNIT_ADDED","PLAYER_ENTERING_WORLD"}
     for _,ev in ipairs(events) do pcall(f.RegisterEvent,f,ev) end
-    f:SetScript("OnEvent",function(_,ev,arg)
-        if ev=="COMBAT_LOG_EVENT_UNFILTERED" then A:HandleCombatLog()
+    f:SetScript("OnEvent",function(_,ev,arg1,arg2)
+        if ev=="PARTY_KILL" then A:HandlePartyKill(arg1,arg2)
         elseif ev=="PLAYER_XP_UPDATE" then A:HandleXPUpdate()
-        elseif ev=="PLAYER_DEAD" and A.db and A.db.kills.trackDeaths and type(ComfyData)=="table" then ComfyData:RecordDeath({time=Epoch()}); A:RefreshFeature()
+        -- ComfyData already owns PLAYER_DEAD persistence. Never count twice.
+        elseif ev=="PLAYER_DEAD" then A:RefreshFeature()
         elseif ev=="PLAYER_TARGET_CHANGED" then A:CaptureUnit("target")
         elseif ev=="UPDATE_MOUSEOVER_UNIT" then A:CaptureUnit("mouseover")
-        elseif ev=="NAME_PLATE_UNIT_ADDED" and arg then A:CaptureUnit(arg)
+        elseif ev=="NAME_PLATE_UNIT_ADDED" and arg1 then A:CaptureUnit(arg1)
         elseif ev=="PLAYER_ENTERING_WORLD" then A:CaptureUnit("target") end
     end)
 end
