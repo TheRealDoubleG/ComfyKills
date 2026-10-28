@@ -32,3 +32,7 @@ This is an original Comfy Suite implementation inspired by the useful database/s
 - If modern API marks GUIDs secret during combat, do not bypass restrictions or claim complete kill coverage.
 
 Offline tests: lua5.1 tests/test_kill_events.lua . ; lua5.4 tests/test_kill_events.lua .
+
+## Safe PARTY_KILL attribution (development)
+
+Unresolved/empty player GUIDs cannot accidentally authorize an empty attacker source. PARTY_KILL is counted only when an explicit, nonempty attacker GUID matches the actual player or an opted-in pet. Offline Lua tests include unknown attacker cases; real Forever event signature confirmation remains necessary.
