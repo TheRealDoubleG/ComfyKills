@@ -55,7 +55,12 @@ function A:RecordKill(sourceGUID,destGUID,destName)
     local playerGUID=type(UnitGUID)=="function" and UnitGUID("player") or nil
     local petGUID=type(UnitGUID)=="function" and UnitGUID("pet") or nil
     if type(destGUID)~="string" or destGUID=="" then return false end
-    if sourceGUID~=playerGUID and not (self.db.kills.countPetKills and sourceGUID==petGUID) then return false end
+    -- A missing UnitGUID("player") must never authorize a nil sourceGUID.
+    if type(sourceGUID)~="string" or sourceGUID=="" then return false end
+    local playerKill=type(playerGUID)=="string" and playerGUID~="" and sourceGUID==playerGUID
+    local petKill=self.db.kills.countPetKills and type(petGUID)=="string"
+        and petGUID~="" and sourceGUID==petGUID
+    if not playerKill and not petKill then return false end
 
     -- The modern PARTY_KILL event may be repeated or coexist with legacy
     -- combat-log notifications on some clients. Count a mob GUID only once.
