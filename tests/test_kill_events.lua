@@ -76,4 +76,18 @@ now=135
 emit("PARTY_KILL","Player-123-456",g1)
 check(kills["npc:1234"].total==2,"expired dedupe window permits event")
 check(#A.recentKillOrder==3,"bounded dedupe ledger records accepted kills")
+-- When player/pet GUIDs cannot be resolved, missing attacker GUID must
+-- NOT compare equal to a missing player GUID (nil == nil).
+local oldUnitGUID=UnitGUID
+local ghost="Creature-0-1-2-3-7777-00000077"
+UnitGUID=function() return nil end
+check(not A:RecordKill(nil,ghost,"Ghost"),"unresolved GUID cannot authorize unknown killer")
+check(kills["npc:7777"]==nil,"no ghost kill written")
+check(not A:RecordKill("",ghost,"Ghost"),"empty attacker excluded")
+check(kills["npc:7777"]==nil,"empty attacker did not mutate counters")
+UnitGUID=oldUnitGUID
+check(not A:RecordKill(nil,ghost,"Ghost"),"nil attacker rejected even with valid player GUID")
+check(not A:RecordKill("Other-999",ghost,"Ghost"),"other attacker rejected")
+check(A:RecordKill("Player-123-456",ghost,"Ghost"),"valid attacker still accepted")
+check(kills["npc:7777"].total==1,"authorized kill stored once")
 print("PASS: "..checked.." direct kill and death interoperability checks")
