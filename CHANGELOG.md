@@ -1,6 +1,8 @@
 # ComfyKills Changelog
 
 ## 0.4 (development, not released)
+- Require nonempty matched player/pet attacker GUID for PARTY_KILL; never treat nil source as an authorized player when UnitGUID is also nil.
+- Add tests for missing GUIDs, unauthorized attacker and ordinary player/pet kills.
 - Use modern standalone PARTY_KILL API, not restricted combat log.
 - Count attacker player/pet GUID kills only, with bounded mob GUID deduplication.
 - Remove duplicate death recording; ComfyData remains single writer.
