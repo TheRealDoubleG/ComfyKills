@@ -1,5 +1,14 @@
 # ComfyKills Changelog
 
+## 0.4 (development, not released)
+- Require nonempty matched player/pet attacker GUID for PARTY_KILL; never treat nil source as an authorized player when UnitGUID is also nil.
+- Add tests for missing GUIDs, unauthorized attacker and ordinary player/pet kills.
+- Use modern standalone PARTY_KILL API, not restricted combat log.
+- Count attacker player/pet GUID kills only, with bounded mob GUID deduplication.
+- Remove duplicate death recording; ComfyData remains single writer.
+- Lua 5.1/5.4 tests for kills, pet kills, duplicates and death interoperability.
+- Requires client-side tests at WoW Forever launch.
+
 ## 0.2 Beta – 28.09.2026
 - Registered ComfyKills in Blizzard's native AddOns settings list with a button to open the full Comfy settings window.
 
